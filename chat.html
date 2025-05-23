@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Heal AI - Chat</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Chat-specific styles */
+        .chat-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background-color: var(--white);
+            border-right: 1px solid var(--gray-300);
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-normal);
+        }
+        
+        .sidebar-header {
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+        }
+        
+        .new-chat-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: var(--space-md);
+            background-color: var(--primary-light);
+            color: var(--white);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+        }
+        
+        .new-chat-btn:hover {
+            background-color: var(--primary);
+        }
+        
+        .conversation-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .conversation-item {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+        }
+        
+        .conversation-item:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .conversation-item.active {
+            background-color: var(--primary-light);
+            color: var(--white);
+        }
+        
+        .sidebar-footer {
+            padding: var(--space-md);
+            border-top: 1px solid var(--gray-300);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--background);
+        }
+        
+        .chat-header {
+            padding: var(--space-md) var(--space-lg);
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+        
+        .chat-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: var(--space-lg);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .message-user {
+            align-self: flex-end;
+            background-color: var(--primary);
+            color: var(--white);
+            border-bottom-right-radius: 0;
+        }
+        
+        .message-ai {
+            align-self: flex-start;
+            background-color: var(--white);
+            border-bottom-left-radius: 0;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: var(--space-xs);
+            text-align: right;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            align-self: flex-start;
+            margin-top: var(--space-sm);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        .song-recommendation {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            border-left: 4px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            box-shadow: var(--shadow-sm);
+            max-width: 90%;
+            align-self: flex-start;
+        }
+        
+        .song-thumbnail {
+            width: 80px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+        }
+        
+        .song-info {
+            flex: 1;
+        }
+        
+        .song-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .song-artist {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        
+        .song-reason {
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        
+        .chat-input-container {
+            padding: var(--space-md) var(--space-lg);
+            background-color: var(--white);
+            border-top: 1px solid var(--gray-300);
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            background-color: var(--background);
+            border-radius: var(--radius-full);
+            padding: var(--space-sm) var(--space-md);
+            box-shadow: var(--shadow-input);
+        }
+        
+        .chat-input {
+            flex: 1;
+            border: none;
+            background: none;
+            padding: var(--space-sm) 0;
+            font-family: var(--font-chat);
+            font-size: 1rem;
+            resize: none;
+            max-height: 120px;
+            min-height: 24px;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+        }
+        
+        .chat-send-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+        
+        .chat-send-btn:hover {
+            transform: scale(1.1);
+            background-color: var(--primary-light);
+            color: var(--white);
+        }
+        
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: var(--space-xl);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .welcome-title {
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+            color: var(--primary);
+        }
+        
+        .welcome-message {
+            max-width: 600px;
+            margin-bottom: var(--space-xl);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .start-chat-btn {
+            padding: var(--space-md) var(--space-xl);
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .start-chat-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .chat-messages {
+                padding: var(--space-md);
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+            
+            .chat-input-container {
+                padding: var(--space-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Heart Heal AI</h2>
+                <button class="close-sidebar" id="close-sidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="new-chat-btn" id="new-chat-btn">
+                    <i class="fas fa-plus"></i>
+                    <span>New Conversation</span>
+                </div>
+                
+                <ul class="conversation-list" id="conversation-list">
+                    <!-- Conversations will be added here dynamically -->
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info" id="user-info">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <div class="user-name" id="user-name">User</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="chat-header">
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 class="chat-title">Conversation with Heart Heal AI</h2>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="settings-btn">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Welcome Screen (shown on first load) -->
+            <div class="welcome-screen" id="welcome-screen">
+                <div class="welcome-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h1 class="welcome-title">Welcome to Heart Heal AI</h1>
+                <p class="welcome-message" id="welcome-message">
+                    Hi <span id="user-name-welcome">there</span>, I'm your personal AI companion designed to help you heal from love failures. I'm here to listen, understand, and support you through this journey. We can talk about your feelings, memories, and I can suggest songs that might resonate with your experience.
+                </p>
+                <button class="start-chat-btn" id="start-chat-btn">
+                    <i class="fas fa-comment"></i>
+                    <span>Start Conversation</span>
+                </button>
+            </div>
+            
+            <!-- Chat Messages (hidden initially) -->
+            <div class="chat-messages" id="chat-messages" style="display: none;">
+                <!-- Messages will be added here dynamically -->
+            </div>
+            
+            <!-- Chat Input (hidden initially) -->
+            <div class="chat-input-container" id="chat-input-container" style="display: none;">
+                <div class="chat-input-wrapper">
+                    <textarea class="chat-input" id="chat-input" placeholder="Type your message here..." rows="1"></textarea>
+                    <button class="chat-send-btn" id="chat-send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Background Music (Hidden) -->
+    <audio id="background-music" loop>
+        <source src="background_music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button id="toggle-audio" title="Toggle Music">
+            <i class="fas fa-volume-down"></i>
+        </button>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="30">
+    </div>
+    
+    <script src="js/chat.js"></script>
+</body>
+</html>

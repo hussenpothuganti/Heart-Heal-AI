@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Heal AI - Heal Your Heart, One Conversation at a Time</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="description" content="Heart Heal AI is your personal AI companion to help you heal from love failures through conversation and music.">
+</head>
+<body>
+    <div class="landing-page">
+        <div class="landing-content fade-in">
+            <h1 class="landing-title">Heart Heal AI</h1>
+            <p class="landing-subtitle">Heal Your Heart, One Conversation at a Time</p>
+            
+            <div class="auth-card slide-up">
+                <div class="auth-card-header">
+                    <h2 class="auth-card-title">Welcome</h2>
+                    <p class="auth-card-subtitle">Sign in to start your healing journey</p>
+                </div>
+                
+                <div class="auth-tabs">
+                    <div class="auth-tab active" id="login-tab">Login</div>
+                    <div class="auth-tab" id="signup-tab">Sign Up</div>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email" class="form-label">Email</label>
+                        <input type="email" id="login-email" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-password" class="form-label">Password</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">Remember me</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    
+                    <div class="text-center mt-3">
+                        <a href="#" id="forgot-password">Forgot password?</a>
+                    </div>
+                </form>
+                
+                <!-- Sign Up Form (Hidden by default) -->
+                <form id="signup-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="signup-name" class="form-label">Name</label>
+                        <input type="text" id="signup-name" class="form-input" placeholder="Enter your name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signup-email" class="form-label">Email</label>
+                        <input type="email" id="signup-email" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signup-password" class="form-label">Password</label>
+                        <input type="password" id="signup-password" class="form-input" placeholder="Create a password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signup-gender" class="form-label">Gender</label>
+                        <select id="signup-gender" class="form-select" required>
+                            <option value="" disabled selected>Select your gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                </form>
+            </div>
+            
+            <p class="mt-4" style="color: var(--white); opacity: 0.8;">
+                Your personal AI companion for emotional healing
+            </p>
+        </div>
+    </div>
+    
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button id="toggle-audio" title="Toggle Music">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="70">
+    </div>
+    
+    <!-- Background Music (Hidden) -->
+    <audio id="background-music" loop>
+        <source src="background_music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <script src="js/auth.js"></script>
+</body>
+</html>
